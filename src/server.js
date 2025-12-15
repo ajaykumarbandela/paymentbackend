@@ -4,7 +4,9 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 import paymentRoutes from './routes/paymentRoutes.js'
+import authRoutes from './routes/authRoutes.js'
 import { SERVER_CONFIG } from './config/config.js'
+import { testConnection } from './config/database.js'
 
 // Load environment variables
 dotenv.config()
@@ -36,6 +38,7 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/payment', paymentRoutes)
+app.use('/api/auth', authRoutes)
 
 // 404 handler
 app.use((req, res) => {
@@ -53,8 +56,13 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = SERVER_CONFIG.port
-app.listen(PORT, () => {
-  console.log(`
+
+// Test database connection before starting server
+testConnection().then((connected) => {
+  const dbStatus = connected ? '✓ Connected' : '✗ Not Connected'
+  
+  app.listen(PORT, () => {
+    console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
 ║           🚀 ExtraHand Backend Server                ║
@@ -62,16 +70,22 @@ app.listen(PORT, () => {
 ║  Server running at: http://localhost:${PORT}           ║
 ║  Environment: ${SERVER_CONFIG.nodeEnv.padEnd(37)}║
 ║  Razorpay: ✓ Configured                              ║
+║  Database: ${dbStatus.padEnd(37)}║
 ║                                                       ║
 ║  Available endpoints:                                 ║
 ║  - GET  /health                                       ║
 ║  - POST /api/payment/create-order                     ║
 ║  - POST /api/payment/verify-payment                   ║
 ║  - GET  /api/payment/order-status/:orderId            ║
+║  - GET  /api/payment/transaction/:transactionId       ║
+║  - GET  /api/payment/transactions                     ║
+║  - GET  /api/payment/user-transactions/:userId        ║
+║  - GET  /api/payment/stats                            ║
 ║  - POST /api/payment/refund                           ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
-  `)
+    `)
+  })
 })
 
 export default app

@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "db:setup": "node src/db/setup.js",
+    "db:test": "node src/db/test-connection.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -23,7 +25,9 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "razorpay": "^2.9.6"
+    "pg": "^8.16.3",
+    "razorpay": "^2.9.6",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
